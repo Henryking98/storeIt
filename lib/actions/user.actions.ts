@@ -92,28 +92,24 @@ export const verifySecret = async ({
 };
 
 export const getCurrentUser = async () => {
-    const { databases, account } = await createSessionClient();
+    try {
+        const { databases, account } = await createSessionClient();
+
+        const result = await account.get();
+
+        const user = await databases.listDocuments(
+            appwriteConfig.databaseId,
+            appwriteConfig.usersCollectionId,
+            [Query.equal("accountId", result.$id)]
+        );
     
-    // const sessionCookie = (await cookies()).get("appwrite-session")?.value;
-
-    // // const sessionCookie = cookies().get("appwrite-session")?.value;
-
-    // if (!sessionCookie) {
-    //     console.log("No session cookie found. User is not signed in.");
-    //     return null; // Return null if no session cookie
-    // }
-
-    const result = await account.get();
-
-    const user = await databases.listDocuments(
-        appwriteConfig.databaseId,
-        appwriteConfig.usersCollectionId,
-        [Query.equal("accountId", result.$id)]
-    );
-
-    if (user.total <= 0) return null;
-
-    return parseStringify(user.documents[0]);
+        if (user.total <= 0) return null;
+    
+        return parseStringify(user.documents[0]);
+    }catch(error) {
+        console.log(error)
+    }
+    
 };
 
 export const signOutUser = async () => {
