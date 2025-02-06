@@ -13,7 +13,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
   if (!currentUser) return redirect("/sign-in");
 
   return (
-    <main className="flex h-screen">
+    <main className="flex min-h-screen">
       {/* <Sidebar /> */}
       <Sidebar {...currentUser} />
 
